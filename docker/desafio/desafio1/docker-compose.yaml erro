@@ -1,0 +1,49 @@
+version: '3.8'
+volumes:
+  mongo_vol:
+    name:  mongo_vol
+  
+networks:
+  some-network:
+    driver: bridge
+    name: some-network
+
+services:
+  mongoex:
+    container_name: mongoex
+    image: mongo-express
+    ports:
+      - 8081:8081
+    networks:
+      - some-network
+    depends_on:
+      - mongo
+    environment:
+      ME_CONFIG_MONGODB_AUTH_DATABASE: mongo
+      ME_CONFIG_MONGODB_AUTH_USERNAME: mongouser
+      ME_CONFIG_MONGODB_AUTH_PASSWORD: mongopwd 
+      ME_CONFIG_SITE_BASEURL: mongodb://mongouser:mongopwd@mongo:27017
+      ME_CONFIG_SITE_COOKIESECRET: cookiesecret
+      ME_CONFIG_SITE_SESSIONSECRET: sessionsecret
+      ME_CONFIG_OPTIONS_EDITORTHEME: "ambiance"
+      ME_CONFIG_MONGODB_SERVER: "web_db_1"
+      ME_CONFIG_BASICAUTH_USERNAME: ''
+      ME_CONFIG_BASICAUTH_PASSWORD: ''
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: 'false'
+      ME_CONFIG_MONGODB_ALLOW_DISK_USE: 'false'
+      ME_CONFIG_BASICAUTH: 'false'
+      PORT: 8081
+
+  mongo:
+    container_name: mongo
+    image: mongo:4.4.3
+    ports:
+      - 27017:27017
+    networks:
+      - some-network
+    volumes:
+      - mongo_vol:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongouser
+      MONGO_INITDB_ROOT_PASSWORD: mongopwd
+    

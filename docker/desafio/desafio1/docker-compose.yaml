@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  api:
+    image: magsond/mongo_express_custome:v1
+    build: 
+      dockerfile: ./Dockerfile
+      context: ./
+    ports:
+      - 8081:8081
+    networks:
+      - some-network
+    depends_on:
+      - mongodb
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongouser:mongopwd@mongodb:27017
+      ME_CONFIG_BASICAUTH: 'false'
+      ME_CONFIG_SITE_COOKIESECRET: cookiesecret
+      ME_CONFIG_SITE_SESSIONSECRET: sessionsecret
+
+  mongodb:
+    image: mongo:4.4.3
+    ports:
+      - 27017:27017
+    networks:
+      - some-network
+    volumes:
+      - mongo_vol:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongouser
+      MONGO_INITDB_ROOT_PASSWORD: mongopwd
+    
+
+volumes:
+  mongo_vol:
+    name:  mongo_vol
+  
+networks:
+  some-network:
+    driver: bridge
+    name: some-network
