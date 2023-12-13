@@ -1,0 +1,34 @@
+version: '3.8'
+
+volumes:
+  mariadb_vol:
+    name: mariadb_vol
+
+networks:
+  some-networks-phpmyadmin:
+    name: some-networks-phpmyadmin
+
+services:
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin
+    ports:
+      - 8080:80
+    networks:
+      - some-networks-phpmyadmin
+    depends_on:
+      - db
+    environment:
+      - PMA_ARBITRARY=1
+
+  db:
+    container_name: db
+    image: mariadb:10.6
+    networks:
+      - some-networks-phpmyadmin
+    ports:
+      - 3306:3306
+    volumes:
+      - mariadb_vol:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
